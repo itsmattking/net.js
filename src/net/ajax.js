@@ -44,10 +44,12 @@ function() {
     501: 'Unsupported Method'
   };
 
+  function nothing() { };
+
   function request(options) {
 
-    var success = options.success || function() {};
-    var error = options.error || function() {};
+    var success = options.success || nothing;
+    var error = options.error || nothing;
     var req = new XMLHttpRequest();
 
     req.open(options.method, options.url, true);
@@ -65,7 +67,7 @@ function() {
 
       if ((req.status in invalidResponses) &&
           !(req.status in validResponses)) {
-        error(null);
+        error(req);
         throw new Error('Error issuing ' + options.method + ' to ' +
                         options.url + ' (' + req.status + ' ' +
                         invalidResponses[req.status] + ')');
@@ -95,13 +97,11 @@ function() {
 
   function post(options) {
     options.method = METHODS.POST;
-    options.data = JSON.stringify(options.data || {});
     request(options);
   }
 
   function put(options) {
     options.method = METHODS.PUT;
-    options.data = JSON.stringify(options.data || {});
     request(options);
   }
 

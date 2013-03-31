@@ -7,7 +7,7 @@
   <body>
     <script src="require.js"></script>
 <script>
-    define('testes', ['net'], function(net) {
+    define('test-module', ['net'], function(net) {
       net.json.get({
         url: '/test.json',
         success: function(data) {
@@ -17,9 +17,25 @@
           console.log(req);
         }
       });
+      net.form.post({
+        url: '/test-post',
+        data: {
+          title: 'Item 1',
+          body: 'Here it is',
+          number: 17
+        },
+        success: function(response) {
+          var d = JSON.parse(response);
+          console.log(d);
+        },
+        error: function(response) {
+          console.log(response);
+        }
+      });
     });
 </script>
-<script>require(['testes']);</script> 
+
+<script>require(['test-module']);</script> 
   </body>
 </html>
 

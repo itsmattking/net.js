@@ -4,21 +4,22 @@ define('net/json',
 
 function(ajax) {
 
-  var CONTENT_TYPE = 'application/json';
-
   function preprocess(options) {
     options = options || {};
     options.headers = options.headers || {};
-    options.headers['Content-Type'] = options.headers['Content-Type'] || CONTENT_TYPE;
-    options.headers['Accept'] = options.headers['Accept'] || CONTENT_TYPE;
+    options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+    options.headers['Accept'] = options.headers['Accept'] || 'application/json';
     options.process = process;
+    if (options.data) {
+      options.data = JSON.stringify(options.data);
+    }
   }
 
   function process(response, success, error) {
     try {
       response = JSON.parse(response || {});
     } catch(e) {
-      error(null);
+      error(response);
       throw new Error('Error parsing JSON: ' + e);
     }
     success(response);
@@ -31,13 +32,11 @@ function(ajax) {
 
   function post(options) {
     preprocess(options);
-    options.data = JSON.stringify(options.data || {});
     ajax.post(options);
   }
 
   function put(options) {
     preprocess(options);
-    options.data = JSON.stringify(options.data || {});
     ajax.put(options);
   }
 

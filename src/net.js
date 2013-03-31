@@ -1,13 +1,15 @@
 define('net',
 
        ['net/ajax',
-        'net/json'],
+        'net/json',
+        'net/form'],
 
-function(ajax, json) {
+function(ajax, json, form) {
 
   var api = {
     ajax: ajax,
-    json: json
+    json: json,
+    form: form
   };
 
   return api;

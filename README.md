@@ -46,6 +46,7 @@ There are a few basic options to get started:
 * success - what to do on success
 * error - what to do on error
 
+
     net.ajax.get({
       url: '/some/path',
 	  success: function(results) {
@@ -55,25 +56,31 @@ There are a few basic options to get started:
 	  }
 	});
 	
+
 When making a raw request, you have to also add:
 
 * method - GET, POST, PUT, etc.
+
 
     net.ajax.request({
 	  method: 'GET',
       url: '/some/path',
 	  success: function(results) {
+        // do something with the results
 	  }
 	});
 
+
 You can optionally set arbitrary headers on the request. This may come
 in handy for setting custom headers, or setting up HTTP Auth headers.
+
 
 	net.ajax.get({
 	  headers: {
         'X-Custom-Header': 'custom-value'
 	  }
 	});
+
 
 JSON
 ----
@@ -82,6 +89,7 @@ The JSON client is similar to AJAX, but does a little processing on the request
 to serialize and deserialize JSON objects. The JSON client is handy for talking
 to APIs that speak in pure JSON.
 
+
 	net.json.get({
       url: '/my-data.json',
 	  success: function(data) {
@@ -89,9 +97,11 @@ to APIs that speak in pure JSON.
 	  }
 	});
 	
+
 When issuing POST or PUT, you simply supply a data object. The JSON client will serialize
 it and issue the request to your endpoint as Content-Type: application/json, and the body
 of the request will contain the serialized JSON.
+
 
 	net.json.post({
   	  url: '/save-data',
@@ -101,6 +111,22 @@ of the request will contain the serialized JSON.
       }
 	})
 
+
+Form
+----
+
+The form client is a convenience method to encode and serialize data as form POST or PUT requests.
+
+
+    net.form.post({
+  	  url: '/save-data',
+      data: myData, // an object to be serialized as form data
+      success: function(response) {
+        console.log(response); // raw text response from the server
+      }
+    });
+
+
 Supported Browsers
 ==================
 
@@ -109,3 +135,4 @@ Supported Browsers
 * Safari 5.x+, iOS
 * IE8+ (and probably 6/7, but need tests!)
 * Opera
+
