@@ -33,7 +33,7 @@ function(ajax) {
 
   function post(options) {
     preprocess(options);
-    ajax.post(options);
+    ajax.post(options).then(process).succeed();
   }
 
   function put(options) {

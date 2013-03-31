@@ -1,8 +1,8 @@
 define('net/ajax',
 
-       [],
+       ['promise'],
 
-function() {
+function(Promise) {
 
   window.XMLHttpRequest = window.XMLHttpRequest || (function () {
     var types = ['Msxml2.XMLHTTP.6.0',
@@ -52,6 +52,9 @@ function() {
     var error = options.error || nothing;
     var req = new XMLHttpRequest();
 
+    var promise = new Promise();
+    promise.then(success, error);
+
     req.open(options.method, options.url, true);
 
     options.headers = options.headers || {};
@@ -67,7 +70,7 @@ function() {
 
       if ((req.status in invalidResponses) &&
           !(req.status in validResponses)) {
-        error(req);
+        promise.fail(req);
         throw new Error('Error issuing ' + options.method + ' to ' +
                         options.url + ' (' + req.status + ' ' +
                         invalidResponses[req.status] + ')');
@@ -76,16 +79,18 @@ function() {
       if (options.process) {
         options.process.call(options.process, req, success, error);
       } else {
-        success(req);
+        promise.succeed(req);
       }
 
     };
 
     if (req.readyState === 4) {
-      return;
+      return false;
     }
 
     req.send(options.data || null);
+
+    return promise;
   }
 
   function get(options) {
