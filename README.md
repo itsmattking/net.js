@@ -42,6 +42,7 @@ Making a Request
 
 There are a few basic options to get started:
 
+
 * url - where to make a request
 * success - what to do on success
 * error - what to do on error
@@ -58,6 +59,7 @@ There are a few basic options to get started:
 	
 
 When making a raw request, you have to also add:
+
 
 * method - GET, POST, PUT, etc.
 
