@@ -42,11 +42,11 @@ Making a Request
 
 There are a few basic options to get started:
 
-
 * url - where to make a request
 * success - what to do on success
 * error - what to do on error
 
+Here's an example:
 
     net.ajax.get({
       url: '/some/path',
@@ -60,9 +60,9 @@ There are a few basic options to get started:
 
 When making a raw request, you have to also add:
 
-
 * method - GET, POST, PUT, etc.
 
+Here's an example:
 
     net.ajax.request({
 	  method: 'GET',
@@ -75,7 +75,6 @@ When making a raw request, you have to also add:
 
 You can optionally set arbitrary headers on the request. This may come
 in handy for setting custom headers, or setting up HTTP Auth headers.
-
 
 	net.ajax.get({
 	  headers: {
