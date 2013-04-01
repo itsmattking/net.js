@@ -10,6 +10,7 @@ function(ajax) {
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
     options.headers['Accept'] = options.headers['Accept'] || 'application/json';
     options.process = options.process || process;
+
     if (options.data) {
       options.data = JSON.stringify(options.data);
     }
@@ -23,27 +24,27 @@ function(ajax) {
       error(request);
       throw new Error('Error parsing JSON: ' + e);
     }
-    success(response);
+    return response;
   }
 
   function get(options) {
     preprocess(options);
-    ajax.get(options);
+    return ajax.get(options);
   }
 
   function post(options) {
     preprocess(options);
-    ajax.post(options).then(process).succeed();
+    return ajax.post(options).filter(process);
   }
 
   function put(options) {
     preprocess(options);
-    ajax.put(options);
+    return ajax.post(options).filter(process);
   }
 
   function del(options) {
     preprocess(options);
-    ajax.delete(options);
+    return ajax.delete(options);
   }
 
   var api = {

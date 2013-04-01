@@ -9,10 +9,16 @@ function() {
       success: [],
       fail: []
     };
+    this.filters = [];
   }
 
   Promise.prototype.chain = function() {
-    this.chain = true;
+    this.chained = true;
+    return this;
+  };
+
+  Promise.prototype.filter = function(func) {
+    this.filters.push(func);
     return this;
   };
 
@@ -28,10 +34,13 @@ function() {
 
   Promise.prototype.succeed = function(response) {
     var result = response;
+    for (var i = 0; i < this.filters.length; i++) {
+      result = this.filters[i](result) || result;
+    }
     while (this.promises.success.length) {
       var func = this.promises.success.shift();
       var callResult = func(result);
-      if (this.chain) {
+      if (this.chained) {
         result = callResult;
       }
     }
@@ -40,10 +49,13 @@ function() {
 
   Promise.prototype.fail = function(response) {
     var result = response;
+    for (var i = 0; i < this.filters.length; i++) {
+      result = this.filters[i](result) || result;
+    }
     while (this.promises.fail.length) {
       var func = this.promises.fail.shift();
       var callResult = func(result);
-      if (this.chain) {
+      if (this.chained) {
         result = callResult;
       }
     }

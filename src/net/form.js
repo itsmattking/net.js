@@ -26,12 +26,12 @@ function(ajax) {
 
   function post(options) {
     preprocess(options);
-    ajax.post(options);
+    return ajax.post(options);
   }
 
   function put(options) {
     preprocess(options);
-    ajax.put(options);
+    return ajax.put(options);
   }
 
   var api = {

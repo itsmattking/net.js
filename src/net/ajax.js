@@ -48,13 +48,16 @@ function(Promise) {
 
   function request(options) {
 
-    var success = options.success || nothing;
-    var error = options.error || nothing;
-    var req = new XMLHttpRequest();
+    var success = options.success;
+    var error = options.error;
 
     var promise = new Promise();
-    promise.then(success, error);
+    if (success || error) {
+      promise.then(success || nothing,
+                   error || nothing);
+    }
 
+    var req = new XMLHttpRequest();
     req.open(options.method, options.url, true);
 
     options.headers = options.headers || {};
@@ -95,22 +98,22 @@ function(Promise) {
 
   function get(options) {
     options.method = METHODS.GET;
-    request(options);
+    return request(options);
   }
 
   function post(options) {
     options.method = METHODS.POST;
-    request(options);
+    return request(options);
   }
 
   function put(options) {
     options.method = METHODS.PUT;
-    request(options);
+    return request(options);
   }
 
   function del(options) {
     options.method = METHODS.DELETE;
-    request(options);
+    return request(options);
   }
 
   var api = {
