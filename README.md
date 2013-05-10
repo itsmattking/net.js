@@ -23,10 +23,71 @@ If you prefer using net.js with require.js, just add it as a dependency and away
 	    // Your code...
 	});
 	
+Callbacks and Promises
+======================
+
+Net.js supports two styles of requests: traditional callbacks and promises.
+
+Example: Callback Style
+-----------------------
+
+    net.ajax.get({
+	  url: '/my-endpoint',
+	  success: function(req) {
+        // successful response
+	  },
+	  error: function(req) {
+        // error response
+	  }
+	});
+
+Example: Promise Style
+----------------------
+
+The promises support in net.js is simplistic. Just chain your functions using .then(), passing a
+success function and fail function.
+
+    net.ajax.get({
+	  url: '/my-endpoint'
+    }).then(
+	  function(req) {
+        // successful response
+      },
+	  function(req) {
+        // successful response
+      }
+    );
+
+Each set of functions are run in the order specified. By calling .chain() on a promise, each
+successive function will get back the data return from the previous set.
+
+    net.ajax.get({
+	  url: '/my-endpoint'
+    }).chain().then(
+	  function(req) {
+        // successful response
+		// do something with the request, then
+	    var myObject = { item: req.responseText };
+		return myObject;
+      },
+	  function(req) {
+        // successful response
+      }
+    ).then(
+	  function(myObject) {
+		// got the return value from the previous function
+      }
+	);
+
+Request Types
+=============
+
+Net.js has a few base types of requests you can make.
+
 AJAX
 ----
 
-net.js has a simple wrapper around AJAX that exposes a few convenience methods (these are self explanatory):
+A simple wrapper around XMLHttpRequest that exposes a few convenience methods (these are self explanatory):
 
     net.ajax.get
 	net.ajax.post
