@@ -73,12 +73,10 @@ function() {
                         invalidResponses[req.status] + ')');
       }
 
-      var response = req.responseText;
-
       if (options.process) {
-        options.process.call(options.process, response, success, error);
+        options.process.call(options.process, req, success, error);
       } else {
-        success(response);
+        success(req);
       }
 
     };

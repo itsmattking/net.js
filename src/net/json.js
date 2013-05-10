@@ -9,17 +9,18 @@ function(ajax) {
     options.headers = options.headers || {};
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
     options.headers['Accept'] = options.headers['Accept'] || 'application/json';
-    options.process = process;
+    options.process = options.process || process;
     if (options.data) {
       options.data = JSON.stringify(options.data);
     }
   }
 
-  function process(response, success, error) {
+  function process(request, success, error) {
+    var response;
     try {
-      response = JSON.parse(response || {});
+      response = JSON.parse(request.responseText || {});
     } catch(e) {
-      error(response);
+      error(request);
       throw new Error('Error parsing JSON: ' + e);
     }
     success(response);
@@ -42,7 +43,7 @@ function(ajax) {
 
   function del(options) {
     preprocess(options);
-    ajax.del(options);
+    ajax.delete(options);
   }
 
   var api = {
