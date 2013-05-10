@@ -50,7 +50,9 @@ Here's an example:
 
     net.ajax.get({
       url: '/some/path',
-	  success: function(results) {
+	  success: function(req) {
+        // req is the raw request instance from native AJAX calls.
+	    // https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest
 	  },
 	  error: function() {
         console.log('Error making request!');
@@ -67,8 +69,9 @@ Here's an example:
     net.ajax.request({
 	  method: 'GET',
       url: '/some/path',
-	  success: function(results) {
-        // do something with the results
+	  success: function(req) {
+        // do something with the request, like
+	    console.log(req.responseText);
 	  }
 	});
 
@@ -87,8 +90,9 @@ JSON
 ----
 
 The JSON client is similar to AJAX, but does a little processing on the request
-to serialize and deserialize JSON objects. The JSON client is handy for talking
-to APIs that speak in pure JSON.
+to serialize and deserialize JSON objects. Instead of passing back the request, it expects
+the endpoint you are talking with to return a JSON object, and it will deserialize
+it and pass it to your success function.
 
 
 	net.json.get({
@@ -122,8 +126,8 @@ The form client is a convenience method to encode and serialize data as form POS
     net.form.post({
   	  url: '/save-data',
       data: myData, // an object to be serialized as form data
-      success: function(response) {
-        console.log(response); // raw text response from the server
+      success: function(req) { // still returns the raw request object.
+        console.log(req);
       }
     });
 
