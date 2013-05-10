@@ -11,34 +11,37 @@
       net.json.get({
          url: '/test.json',
          success: function(data) {
+           console.log('data');
            console.log(data);
          },
          error: function(req) {
            console.log('fail json get');
          }
        });
-       net.form.post({
-         url: '/test-post',
-         data: {
-           title: 'Item 1',
-           body: 'Here it is',
-           number: 17
-         }}).then(function(response) {
-           console.log(response);
-         }, function(response) {
-           console.log('fail json post');
-         }).then(function() { console.log(arguments); }, function() {console.log('fuuu')});
-       net.json.post({
-         url: '/test-post',
-         data: {
-           title: 'Item 2',
-           body: 'Here it is',
-           number: 17
-         }}).then(function(response) {
-           console.log(response);
-         }, function(response) {
-           console.log('fail json post');
-         }).then(function() { console.log(arguments); });
+        net.form.post({
+          url: '/test-post',
+          data: {
+            title: 'Item 1',
+            body: 'Here it is',
+            number: 17
+          }}).then(function(response) {
+            console.log('then');           
+            console.log(response);
+          }, function(response) {
+            console.log('fail json post');
+          }).then(function() { console.log('and then'); console.log(arguments); }, function() {console.log('fuuu')});
+        net.json.post({
+          url: '/test-post',
+          data: {
+            title: 'Item 2',
+            body: 'Here it is',
+            number: 17
+          }}).then(function(data) {
+            console.log('data.blah = ' + data.blah);
+            return {blah: 'no'};
+          }, function(data) {
+            console.log('fail json post');
+          }).then(function(data) {             console.log('data.blah = ' + data.blah); });
 });
 </script>
 

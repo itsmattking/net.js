@@ -80,7 +80,7 @@ function(Promise) {
       }
 
       if (options.process) {
-        options.process.call(options.process, req, success, error);
+        options.process.call(options.process, req, promise);
       } else {
         promise.succeed(req);
       }

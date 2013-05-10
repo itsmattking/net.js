@@ -9,22 +9,22 @@ function(ajax) {
     options.headers = options.headers || {};
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
     options.headers['Accept'] = options.headers['Accept'] || 'application/json';
-    options.process = options.process || process;
+    options.process = process;
 
     if (options.data) {
       options.data = JSON.stringify(options.data);
     }
   }
 
-  function process(request, success, error) {
+  function process(request, promise) {
     var response;
     try {
       response = JSON.parse(request.responseText || {});
     } catch(e) {
-      error(request);
+      promise.fail(request);
       throw new Error('Error parsing JSON: ' + e);
     }
-    return response;
+    return promise.succeed(response);
   }
 
   function get(options) {
@@ -34,12 +34,12 @@ function(ajax) {
 
   function post(options) {
     preprocess(options);
-    return ajax.post(options).filter(process);
+    return ajax.post(options);
   }
 
   function put(options) {
     preprocess(options);
-    return ajax.post(options).filter(process);
+    return ajax.put(options);
   }
 
   function del(options) {

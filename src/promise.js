@@ -4,21 +4,20 @@ define('promise',
 
 function() {
 
+  var types = {
+    SUCCESS: 'success',
+    FAIL: 'fail'
+  };
+
   function Promise() {
     this.promises = {
       success: [],
       fail: []
     };
-    this.filters = [];
   }
 
   Promise.prototype.chain = function() {
     this.chained = true;
-    return this;
-  };
-
-  Promise.prototype.filter = function(func) {
-    this.filters.push(func);
     return this;
   };
 
@@ -32,13 +31,11 @@ function() {
     return this;
   };
 
-  Promise.prototype.succeed = function(response) {
-    var result = response;
-    for (var i = 0; i < this.filters.length; i++) {
-      result = this.filters[i](result) || result;
-    }
-    while (this.promises.success.length) {
-      var func = this.promises.success.shift();
+  Promise.prototype.run = function(type, response) {
+    var result = response,
+        list = this.promises[type];
+    while (list.length) {
+      var func = list.shift();
       var callResult = func(result);
       if (this.chained) {
         result = callResult;
@@ -47,19 +44,12 @@ function() {
     return this;
   };
 
+  Promise.prototype.succeed = function(response) {
+    return this.run(types.SUCCESS, response);
+  };
+
   Promise.prototype.fail = function(response) {
-    var result = response;
-    for (var i = 0; i < this.filters.length; i++) {
-      result = this.filters[i](result) || result;
-    }
-    while (this.promises.fail.length) {
-      var func = this.promises.fail.shift();
-      var callResult = func(result);
-      if (this.chained) {
-        result = callResult;
-      }
-    }
-    return this;
+    return this.run(types.FAIL, response);
   };
 
   return Promise;
