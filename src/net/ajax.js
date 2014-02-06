@@ -66,6 +66,8 @@ function(Promise) {
       req.setRequestHeader(k, options.headers[k]);
     }
 
+    req.withCredentials = options.withCredentials;
+
     req.onreadystatechange = function() {
       if (req.readyState !== 4) {
         return;
