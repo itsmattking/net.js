@@ -19,7 +19,7 @@ function(ajax) {
   function process(request, promise) {
     var response;
     try {
-      response = JSON.parse(request.responseText || {});
+      response = JSON.parse(request.responseText || '{}');
     } catch(e) {
       promise.fail(request);
       throw new Error('Error parsing JSON: ' + e);
