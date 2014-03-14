@@ -16,15 +16,16 @@ function(ajax) {
     }
   }
 
-  function process(request, promise) {
+  function process(request, promise, result) {
     var response;
+    result = result || 'succeed';
     try {
       response = JSON.parse(request.responseText || '{}');
     } catch(e) {
       promise.fail(request);
       throw new Error('Error parsing JSON: ' + e);
     }
-    return promise.succeed(response);
+    return promise[result](response);
   }
 
   function get(options) {

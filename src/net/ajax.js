@@ -73,16 +73,22 @@ function(Promise) {
         return;
       }
 
-      if ((req.status in invalidResponses) &&
-          !(req.status in validResponses)) {
-        promise.fail(req);
-        throw new Error('Error issuing ' + options.method + ' to ' +
+      if ((req.status in invalidResponses) && !(req.status in validResponses) ) {
+
+        if ( options.process ) {
+            options.process.call(options.process, req, promise, 'fail');
+        } else {
+            promise.fail(req);
+        }
+
+        /*throw new Error('Error issuing ' + options.method + ' to ' +
                         options.url + ' (' + req.status + ' ' +
-                        invalidResponses[req.status] + ')');
+                        invalidResponses[req.status] + ')');*/
+        return;
       }
 
       if (options.process) {
-        options.process.call(options.process, req, promise);
+        options.process.call(options.process, req, promise, 'succeed');
       } else {
         promise.succeed(req);
       }
