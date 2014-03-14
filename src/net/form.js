@@ -15,12 +15,24 @@ function(ajax) {
     return out.join('&');
   }
 
+  function formDataize(data) {
+      var fd = new FormData();
+      for ( var k in data ) {
+          fd.append(k, data[k]);
+      }
+      return fd;
+  }
+
   function preprocess(options) {
     options = options || {};
     options.headers = options.headers || {};
-    options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    if (!options.useFormData) { options.headers['Content-Type'] = 'application/x-www-form-urlencoded'; }
     if (options.data) {
-      options.data = serialize(options.data);
+      if ( options.useFormData ) {
+        options.data = formDataize(options.data);
+      } else {
+        options.data = serialize(options.data);
+      }
     }
   }
 
