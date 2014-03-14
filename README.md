@@ -54,7 +54,7 @@ success function and fail function.
         // successful response
       },
 	  function(req) {
-        // successful response
+        // error response
       }
     );
 
@@ -71,7 +71,7 @@ successive function will get back the data return from the previous set.
 		return myObject;
       },
 	  function(req) {
-        // successful response
+        // error response
       }
     ).then(
 	  function(myObject) {
