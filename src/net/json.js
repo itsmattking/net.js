@@ -8,7 +8,7 @@ function(ajax) {
     options = options || {};
     options.headers = options.headers || {};
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
-    options.headers['Accept'] = options.headers['Accept'] || 'application/json';
+    options.headers.Accept = options.headers.Accept || 'application/json';
     options.process = process;
 
     if (options.data) {

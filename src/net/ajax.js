@@ -8,12 +8,16 @@ function(Promise) {
     var types = ['Msxml2.XMLHTTP.6.0',
                  'Msxml2.XMLHTTP.3.0',
                  'Microsoft.XMLHTTP'];
+	  var manufacture = function(type) {
+		  return function() {
+			  return new window.ActiveXObject(type);
+		  };
+	  };
+
     for (var i = 0; i < types.length; i++) {
       try {
-        new ActiveXObject(types[i]);
-        return function() {
-          return new ActiveXObject(types[i]);
-        };
+	      var n = new window.ActiveXObject(types[i]);
+	      return manufacture(types[i]);
       } catch (e) { }
     }
     throw new Error('This browser does not support XMLHttpRequest.');
@@ -44,7 +48,7 @@ function(Promise) {
     501: 'Unsupported Method'
   };
 
-  function nothing() { };
+  function nothing() { }
 
   function request(options) {
 
