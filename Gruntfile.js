@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 					'src/**/*.js',
 					'test/**/*.*'
 				],
-				tasks: ['build'],
+				tasks: ['test'],
 				options: { nospawn: true }
 			}
 		},
@@ -22,6 +22,9 @@ module.exports = function(grunt) {
 				'--ignore-ssl-errors' : true
 			}
 		},
+		clean: {
+			test: ['test/net.js']
+		},
 		requirejs: {
 			compile: {
 				options: {
@@ -29,6 +32,19 @@ module.exports = function(grunt) {
 					baseUrl: "src",
 					optimize: "uglify",
 					out: "./dist/net.js",
+					include: ["net"],
+					wrap: {
+						startFile: ["./build/start.frag", "./build/license.frag"],
+						endFile: "./build/end.frag"
+					}
+				}
+			},
+			compileForTest: {
+				options: {
+					almond: true,
+					baseUrl: "src",
+					out: "./test/net.js",
+					optimize: 'none',
 					include: ["net"],
 					wrap: {
 						startFile: ["./build/start.frag", "./build/license.frag"],
@@ -97,9 +113,45 @@ module.exports = function(grunt) {
 					base: './test',
 					middleware: function(connect, options, middlewares) {
 						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test-json' && req.method === 'GET') {
+								res.setHeader('Content-Type', 'application/json');
+								res.end(JSON.stringify({abc: 123}));
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
 							if (req.url === '/test-post' && req.method === 'POST') {
 								res.setHeader('Content-Type', 'application/json');
 								res.end(JSON.stringify({abc: 123}));
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test' && req.method === 'GET') {
+								res.end("Hi There");
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test/weird-status' && req.method === 'GET') {
+								res.statusCode = 444;
+								res.end("Hi There");
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test/server-error' && req.method === 'GET') {
+								res.statusCode = 500;
+								res.end("Hi There");
+								return true;
 							} else {
 								return next();
 							}
@@ -116,7 +168,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	
 	grunt.registerTask('build', ['jshint', 'requirejs:compile', 'qunit']);
+	grunt.registerTask('test', ['jshint', 'requirejs:compile', 'requirejs:compileForTest', 'qunit', 'clean']);
 	grunt.registerTask('default', ['connect', 'watch']);
 };

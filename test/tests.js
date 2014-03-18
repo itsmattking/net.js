@@ -2,6 +2,7 @@ function apiUrl(uri) {
 	return ['http://127.0.0.1:8000', uri.replace(/^\/+/, '')].join('/');
 }
 
+
 asyncTest("Should fetch a thing", function() {
 	window.net.json.get({
 		url: apiUrl('data/test.json'),
