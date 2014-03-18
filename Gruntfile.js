@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 					optimize: 'none',
 					include: ["net"],
 					wrap: {
-						startFile: ["./build/start.frag", "./build/license.frag"],
+						startFile: ["./build/start.frag"],
 						endFile: "./build/end.frag"
 					}
 				}
@@ -170,7 +170,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	
-	grunt.registerTask('build', ['jshint', 'requirejs:compile', 'qunit']);
 	grunt.registerTask('test', ['jshint', 'requirejs:compile', 'requirejs:compileForTest', 'qunit', 'clean']);
+	grunt.registerTask('build', ['connect', 'jshint', 'requirejs:compile', 'qunit']);
 	grunt.registerTask('default', ['connect', 'watch']);
 };
