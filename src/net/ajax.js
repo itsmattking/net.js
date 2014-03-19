@@ -77,7 +77,12 @@ function(Promise) {
         return;
       }
 
-      if ((req.status in invalidResponses) && !(req.status in validResponses) ) {
+      if ( ((req.status in invalidResponses) && !(req.status in validResponses)) || req.status === 0 ) {
+
+        if ( req.status === 0 ) { // no response from server
+            req.response = {};
+            req.response.error = 'The server could not be reached';
+        }
 
         if ( options.process ) {
             options.process.call(options.process, req, promise, 'fail');
