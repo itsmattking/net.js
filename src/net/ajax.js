@@ -4,21 +4,6 @@ define('net/ajax',
 
 function(Promise) {
 
-  window.XMLHttpRequest = window.XMLHttpRequest || (function () {
-    var types = ['Msxml2.XMLHTTP.6.0',
-                 'Msxml2.XMLHTTP.3.0',
-                 'Microsoft.XMLHTTP'];
-    for (var i = 0; i < types.length; i++) {
-      try {
-        new ActiveXObject(types[i]);
-        return function() {
-          return new ActiveXObject(types[i]);
-        };
-      } catch (e) { }
-    }
-    throw new Error('This browser does not support XMLHttpRequest.');
-  }());
-
   var METHODS = {
     GET: 'GET',
     POST: 'POST',
@@ -44,9 +29,28 @@ function(Promise) {
     501: 'Unsupported Method'
   };
 
+  var reqType;
+
   function nothing() { };
 
   function request(options) {
+
+    if(typeof reqType === 'undefined') {
+        reqType = window.XMLHttpRequest = window.XMLHttpRequest || (function () {
+          var types = ['Msxml2.XMLHTTP.6.0',
+                       'Msxml2.XMLHTTP.3.0',
+                       'Microsoft.XMLHTTP'];
+          for (var i = 0; i < types.length; i++) {
+            try {
+              new ActiveXObject(types[i]);
+              return function() {
+                return new ActiveXObject(types[i]);
+              };
+            } catch (e) { }
+          }
+          throw new Error('This browser does not support XMLHttpRequest.');
+        }());
+    }
 
     var success = options.success;
     var error = options.error;
@@ -57,7 +61,7 @@ function(Promise) {
                    error || nothing);
     }
 
-    var req = new XMLHttpRequest();
+    var req = new reqType();
     req.open(options.method, options.url, true);
 
     options.headers = options.headers || {};
