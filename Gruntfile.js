@@ -122,6 +122,24 @@ module.exports = function(grunt) {
 							}
 						});
 						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test-bad-json' && req.method === 'GET') {
+								res.setHeader('Content-Type', 'application/json');
+								res.end('lllll');
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
+							if (req.url === '/data/test-empty-json' && req.method === 'GET') {
+								res.setHeader('Content-Type', 'application/json');
+								res.end('');
+								return true;
+							} else {
+								return next();
+							}
+						});
+						middlewares.push(function(req, res, next) {
 							if (req.url === '/test-post' && req.method === 'POST') {
 								res.setHeader('Content-Type', 'application/json');
 								res.end(JSON.stringify({abc: 123}));

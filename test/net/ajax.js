@@ -15,6 +15,12 @@ function noError() {
 	});
 }
 
+function noSuccess() {
+	return asyncHandler(function() {
+		ok(false, 'Should not call the success function');
+	});
+}
+
 asyncTest("Makes a successful GET request using net.ajax.get", function() {
 	window.net.ajax.get({
 		url: apiUrl('/data/test'),

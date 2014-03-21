@@ -21,10 +21,9 @@ function(ajax) {
     try {
       response = JSON.parse(request.responseText || '{}');
     } catch(e) {
-      promise.fail(request);
-      throw new Error('Error parsing JSON: ' + e);
+	    return promise.fail(request);
     }
-    return promise.succeed(response);
+    return promise.succeed(response, request);
   }
 
   function get(options) {
