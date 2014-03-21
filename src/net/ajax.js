@@ -4,19 +4,27 @@ define('net/ajax',
 
 function(Promise) {
 
-  window.XMLHttpRequest = window.XMLHttpRequest || (function () {
+  window.XMLHttpRequest = window.XMLHttpRequest || (function() {
+
     var types = ['Msxml2.XMLHTTP.6.0',
                  'Msxml2.XMLHTTP.3.0',
                  'Microsoft.XMLHTTP'];
+
+	  var manufacture = function(type) {
+		  return function() {
+			  return new window.ActiveXObject(type);
+		  };
+	  };
+
     for (var i = 0; i < types.length; i++) {
       try {
-        new ActiveXObject(types[i]);
-        return function() {
-          return new ActiveXObject(types[i]);
-        };
+	      var n = new window.ActiveXObject(types[i]);
+	      return manufacture(types[i]);
       } catch (e) { }
     }
+
     throw new Error('This browser does not support XMLHttpRequest.');
+
   }());
 
   var METHODS = {
@@ -44,21 +52,44 @@ function(Promise) {
     501: 'Unsupported Method'
   };
 
-  function nothing() { };
+	function nothing() { }
 
-  function request(options) {
+	function handleReadyStateChange(promise, options) {
+		
+		return function() {
+			if (this.readyState !== 4) {
+				return;
+			}
+			if ((this.status in invalidResponses) &&
+			    !(this.status in validResponses)) {
+				promise.fail(this);
+			} else {
+				if (options.process) {
+					options.process.call(options.process, this, promise);
+				} else {
+					promise.succeed(this);
+				}
+			}
+		};
 
-    var success = options.success;
-    var error = options.error;
+	}
+
+  function request(optionsOrString, options) {
+
+	  options = options || {};
+
+	  if (typeof optionsOrString === 'string') {
+		  options.url = optionsOrString;
+	  } else {
+		  options = optionsOrString;
+	  }
 
     var promise = new Promise();
-    if (success || error) {
-      promise.then(success || nothing,
-                   error || nothing);
-    }
+	  promise.then(options.success || nothing,
+	               options.error || nothing);
 
     var req = new XMLHttpRequest();
-    req.open(options.method, options.url, true);
+    req.open(options.method || METHODS.GET, options.url, true);
 
     options.headers = options.headers || {};
 
@@ -68,26 +99,7 @@ function(Promise) {
 
     req.withCredentials = options.withCredentials;
 
-    req.onreadystatechange = function() {
-      if (req.readyState !== 4) {
-        return;
-      }
-
-      if ((req.status in invalidResponses) &&
-          !(req.status in validResponses)) {
-        promise.fail(req);
-        throw new Error('Error issuing ' + options.method + ' to ' +
-                        options.url + ' (' + req.status + ' ' +
-                        invalidResponses[req.status] + ')');
-      }
-
-      if (options.process) {
-        options.process.call(options.process, req, promise);
-      } else {
-        promise.succeed(req);
-      }
-
-    };
+    req.onreadystatechange = handleReadyStateChange(promise, options);
 
     if (req.readyState === 4) {
       return false;
