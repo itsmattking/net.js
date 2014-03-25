@@ -17,6 +17,7 @@ function(ajax) {
   }
 
   function process(request, promise, result) {
+
     var response;
     result = result || 'succeed';
     try {
@@ -25,7 +26,7 @@ function(ajax) {
       promise.fail(request);
       throw new Error('Error parsing JSON: ' + e);
     }
-    return promise[result](response);
+    return promise[result](response, request);
   }
 
   function get(options) {

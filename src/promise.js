@@ -31,12 +31,12 @@ function() {
     return this;
   };
 
-  Promise.prototype.run = function(type, response) {
+  Promise.prototype.run = function(type, response, request) {
     var result = response,
         list = this.promises[type];
     while (list.length) {
       var func = list.shift();
-      var callResult = func(result);
+      var callResult = func(result, request);
       if (this.chained) {
         result = callResult;
       }
@@ -44,12 +44,12 @@ function() {
     return this;
   };
 
-  Promise.prototype.succeed = function(response) {
-    return this.run(types.SUCCESS, response);
+  Promise.prototype.succeed = function(response, request) {
+    return this.run(types.SUCCESS, response, request);
   };
 
-  Promise.prototype.fail = function(response) {
-    return this.run(types.FAIL, response);
+  Promise.prototype.fail = function(response, request) {
+    return this.run(types.FAIL, response, request);
   };
 
   return Promise;
