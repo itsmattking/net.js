@@ -1,4 +1,5 @@
 var sys = require('sys');
+var path = require('path');
 module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -106,89 +107,24 @@ module.exports = function(grunt) {
 				src: ['src/**/*.js']
 			}
 		},
-		connect: {
-			server: {
+		express: {
+			testServer: { 
 				options: {
-					port: 8000,
-					base: './test',
-					middleware: function(connect, options, middlewares) {
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test-json' && req.method === 'GET') {
-								res.setHeader('Content-Type', 'application/json');
-								res.end(JSON.stringify({abc: 123}));
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test-bad-json' && req.method === 'GET') {
-								res.setHeader('Content-Type', 'application/json');
-								res.end('lllll');
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test-empty-json' && req.method === 'GET') {
-								res.setHeader('Content-Type', 'application/json');
-								res.end('');
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/test-post' && req.method === 'POST') {
-								res.setHeader('Content-Type', 'application/json');
-								res.end(JSON.stringify({abc: 123}));
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test' && req.method === 'GET') {
-								res.end("Hi There");
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test/weird-status' && req.method === 'GET') {
-								res.statusCode = 444;
-								res.end("Hi There");
-								return true;
-							} else {
-								return next();
-							}
-						});
-						middlewares.push(function(req, res, next) {
-							if (req.url === '/data/test/server-error' && req.method === 'GET') {
-								res.statusCode = 500;
-								res.end("Hi There");
-								return true;
-							} else {
-								return next();
-							}
-						});
-						return middlewares;
-					}
+					server: path.resolve(__dirname, 'test/server.js'),
+					port: 8000
 				}
 			}
 		}
 	});
 	
-	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-express');
 	
 	grunt.registerTask('test', ['jshint', 'requirejs:compile', 'requirejs:compileForTest', 'qunit', 'clean']);
-	grunt.registerTask('build', ['connect', 'jshint', 'requirejs:compile', 'qunit']);
-	grunt.registerTask('default', ['connect', 'watch']);
+	grunt.registerTask('build', ['express', 'test']); //jshint', 'requirejs:compile', 'requirejs:compileForTest', 'qunit', 'clean']);
+	grunt.registerTask('default', ['express', 'watch']);
 };

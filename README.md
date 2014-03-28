@@ -191,14 +191,17 @@ The form client is a convenience method to encode and serialize data as form POS
         console.log(req);
       }
     });
+    
+If `data` is a plain object, it will send the form POST/PUT as a urlencoded request. If `data` is a `form` element or a `FormData` object, it will send it as a multipart/form-data post (handy for file uploads).
 
 
-Supported Browsers
-==================
+Developing
+==========
 
-* Google Chrome 22+ (Desktop, Android)
-* Firefox 10+
-* Safari 5.x+, iOS
-* IE8+ (and probably 6/7, but need tests!)
-* Opera
+You'll need node installed to develop net.js. Just clone the repo and run `npm install` to get set up.
+
+`grunt` is used to manage build and development tasks:
+
+* `grunt` (with no arguments) starts up the test API server, testing/linting/compiling on file changes.
+* `grunt build` does the test/lint/compile once and exits.
 

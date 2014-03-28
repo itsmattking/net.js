@@ -5,22 +5,31 @@ define('net/form',
 function(ajax) {
 
   function serialize(data) {
-    var out = [];
-    for (var k in data) {
-      out.push([
-        encodeURIComponent(k),
-        encodeURIComponent(data[k])
-      ].join('='));
-    }
+	  for (var index = 0,
+	           keys = Object.keys(data),
+	           length = keys.length,
+	           out = [];
+	       index < length;
+	       index++) {
+
+		  out.push([
+			  encodeURIComponent(keys[index]),
+			  encodeURIComponent(data[keys[index]])
+		  ].join('='));
+	  }
     return out.join('&');
   }
 
   function preprocess(options) {
     options = options || {};
     options.headers = options.headers || {};
-    options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     if (options.data) {
-      options.data = serialize(options.data);
+	    if (options.data.nodeName === 'FORM') {
+		    options.data = new FormData(options.data);
+	    } else if (!(options.data instanceof FormData)) {
+		    options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+		    options.data = serialize(options.data);
+	    }
     }
   }
 
