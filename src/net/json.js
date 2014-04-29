@@ -21,7 +21,7 @@ function(ajax) {
     try {
       response = JSON.parse(request.responseText || '{}');
     } catch(e) {
-	    return promise.fail(request);
+      return promise.fail(request);
     }
     return promise.succeed(response, request);
   }
