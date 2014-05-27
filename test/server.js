@@ -1,10 +1,12 @@
 var qs = require('querystring');
 var sys = require('sys');
 var express = require('express');
+var bodyParser = require('body-parser')
+
 var app = express();
 var formidable = require('formidable');
-app.use(express.json());
-app.use(express.urlencoded());
+// parse application/json and application/x-www-form-urlencoded
+app.use(bodyParser())
 
 /**
  * net/ajax test endpoints

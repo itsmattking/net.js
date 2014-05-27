@@ -24,10 +24,12 @@ function(Promise) {
         } catch (e) { }
       }
 
+      
+
       throw new Error('This browser does not support XMLHttpRequest.');
 
     }());
-    
+
     return new XMLHttpRequest(Array.prototype.slice.call(arguments, 0));
   };
 
@@ -66,7 +68,7 @@ function(Promise) {
   function nothing() { }
 
   function handleReadyStateChange(promise, options) {
-    
+
     return function() {
       if (this.readyState !== 4) {
         return;

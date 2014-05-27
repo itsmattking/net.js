@@ -16,14 +16,16 @@ function(ajax) {
     }
   }
 
-  function process(request, promise) {
+  function process(request, promise, result) {
+
     var response;
+    result = result || 'succeed';
     try {
       response = JSON.parse(request.responseText || '{}');
     } catch(e) {
       return promise.fail(request);
     }
-    return promise.succeed(response, request);
+    return promise[result](response, request);
   }
 
   function get(options) {
