@@ -24,6 +24,8 @@ function(Promise) {
         } catch (e) { }
       }
 
+      
+
       throw new Error('This browser does not support XMLHttpRequest.');
 
     }());
