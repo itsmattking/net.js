@@ -31,6 +31,7 @@ module.exports = function(grunt) {
       compile: {
         options: {
           almond: true,
+          name: '../node_modules/almond/almond',
           baseUrl: "src",
           optimize: "uglify",
           out: "./dist/net.js",
@@ -44,6 +45,7 @@ module.exports = function(grunt) {
       compileForTest: {
         options: {
           almond: true,
+          name: '../node_modules/almond/almond',
           baseUrl: "src",
           out: "./test/net.js",
           optimize: 'none',
@@ -117,7 +119,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-requirejs');
+  grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
