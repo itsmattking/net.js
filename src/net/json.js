@@ -8,7 +8,7 @@ function(ajax) {
     options = options || {};
     options.headers = options.headers || {};
     options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
-    options.headers['Accept'] = options.headers['Accept'] || 'application/json';
+    options.headers.Accept = options.headers.Accept || 'application/json';
     options.process = process;
 
     if (options.data) {
@@ -23,8 +23,7 @@ function(ajax) {
     try {
       response = JSON.parse(request.responseText || '{}');
     } catch(e) {
-      promise.fail(request);
-      throw new Error('Error parsing JSON: ' + e);
+      return promise.fail(request);
     }
     return promise[result](response, request);
   }

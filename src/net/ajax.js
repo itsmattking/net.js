@@ -4,6 +4,33 @@ define('net/ajax',
 
 function(Promise) {
 
+  var XMLHttpRequest = function() {
+    XMLHttpRequest = window.XMLHttpRequest || (function() {
+
+      var types = ['Msxml2.XMLHTTP.6.0',
+                   'Msxml2.XMLHTTP.3.0',
+                   'Microsoft.XMLHTTP'];
+
+      var manufacture = function(type) {
+        return function() {
+          return new window.ActiveXObject(type);
+        };
+      };
+
+      for (var i = 0; i < types.length; i++) {
+        try {
+          var n = new window.ActiveXObject(types[i]);
+          return manufacture(types[i]);
+        } catch (e) { }
+      }
+
+      throw new Error('This browser does not support XMLHttpRequest.');
+
+    }());
+
+    return new XMLHttpRequest(Array.prototype.slice.call(arguments, 0));
+  };
+
   var METHODS = {
     GET: 'GET',
     POST: 'POST',
@@ -19,6 +46,7 @@ function(Promise) {
   };
 
   var invalidResponses = {
+    0: 'Server Could Not Be Reached',
     400: 'Bad Request',
     401: 'Unauthorized',
     403: 'Forbidden',
@@ -26,43 +54,51 @@ function(Promise) {
     409: 'Conflict',
     411: 'Method Not Allowed',
     500: 'Internal Server Error',
-    501: 'Unsupported Method'
+    501: 'Unsupported Method',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable'
   };
 
-  var reqType;
+  function badRequest(status) {
+    return status === 0 || status > 399;
+  }
 
-  function nothing() { };
+  function nothing() { }
 
-  function request(options) {
+  function handleReadyStateChange(promise, options) {
 
-    if(typeof reqType === 'undefined') {
-        reqType = window.XMLHttpRequest = window.XMLHttpRequest || (function () {
-          var types = ['Msxml2.XMLHTTP.6.0',
-                       'Msxml2.XMLHTTP.3.0',
-                       'Microsoft.XMLHTTP'];
-          for (var i = 0; i < types.length; i++) {
-            try {
-              new ActiveXObject(types[i]);
-              return function() {
-                return new ActiveXObject(types[i]);
-              };
-            } catch (e) { }
-          }
-          throw new Error('This browser does not support XMLHttpRequest.');
-        }());
+    return function() {
+      if (this.readyState !== 4) {
+        return;
+      }
+      if (badRequest(this.status)) {
+        promise.fail(this);
+      } else {
+        if (options.process) {
+          options.process.call(options.process, this, promise);
+        } else {
+          promise.succeed(this);
+        }
+      }
+    };
+
+  }
+
+  function request(optionsOrString, options) {
+
+    if (typeof optionsOrString === 'string') {
+      options = options || {};
+      options.url = optionsOrString;
+    } else {
+      options = optionsOrString || {};
     }
-
-    var success = options.success;
-    var error = options.error;
 
     var promise = new Promise();
-    if (success || error) {
-      promise.then(success || nothing,
-                   error || nothing);
-    }
+    promise.then(options.success || nothing,
+                 options.error || nothing);
 
-    var req = new reqType();
-    req.open(options.method, options.url, true);
+    var req = new XMLHttpRequest();
+    req.open(options.method || METHODS.GET, options.url, true);
 
     options.headers = options.headers || {};
 
@@ -72,37 +108,7 @@ function(Promise) {
 
     req.withCredentials = options.withCredentials;
 
-    req.onreadystatechange = function() {
-      if (req.readyState !== 4) {
-        return;
-      }
-
-      if ( ((req.status in invalidResponses) && !(req.status in validResponses)) || req.status === 0 ) {
-
-        if ( req.status === 0 ) { // no response from server
-            req.response = {};
-            req.response.error = 'The server could not be reached';
-        }
-
-        if ( options.process ) {
-            options.process.call(options.process, req, promise, 'fail');
-        } else {
-            promise.fail(req);
-        }
-
-        /*throw new Error('Error issuing ' + options.method + ' to ' +
-                        options.url + ' (' + req.status + ' ' +
-                        invalidResponses[req.status] + ')');*/
-        return;
-      }
-
-      if (options.process) {
-        options.process.call(options.process, req, promise, 'succeed');
-      } else {
-        promise.succeed(req);
-      }
-
-    };
+    req.onreadystatechange = handleReadyStateChange(promise, options);
 
     if (req.readyState === 4) {
       return false;
@@ -113,24 +119,32 @@ function(Promise) {
     return promise;
   }
 
-  function get(options) {
-    options.method = METHODS.GET;
-    return request(options);
+  function prepOptions(optionsOrUrl, options, method) {
+    if (typeof optionsOrUrl === 'string' && options) {
+      options.method = method;
+    } else {
+      optionsOrUrl.method = method;
+    }
   }
 
-  function post(options) {
-    options.method = METHODS.POST;
-    return request(options);
+  function get(optionsOrUrl, options) {
+    prepOptions(optionsOrUrl, options, METHODS.GET);
+    return request(optionsOrUrl, options);
   }
 
-  function put(options) {
-    options.method = METHODS.PUT;
-    return request(options);
+  function post(optionsOrUrl, options) {
+    prepOptions(optionsOrUrl, options, METHODS.POST);
+    return request(optionsOrUrl, options);
   }
 
-  function del(options) {
-    options.method = METHODS.DELETE;
-    return request(options);
+  function put(optionsOrUrl, options) {
+    prepOptions(optionsOrUrl, options, METHODS.PUT);
+    return request(optionsOrUrl, options);
+  }
+
+  function del(optionsOrUrl, options) {
+    prepOptions(optionsOrUrl, options, METHODS.DELETE);
+    return request(optionsOrUrl, options);
   }
 
   var api = {
