@@ -63,8 +63,6 @@ function(Promise) {
     return status === 0 || status > 399;
   }
 
-  function nothing() { }
-
   function handleReadyStateChange(promise, options) {
     
     return function() {
@@ -94,8 +92,8 @@ function(Promise) {
     }
 
     var promise = new Promise();
-    promise.then(options.success || nothing,
-                 options.error || nothing);
+    promise.then(options.success || function(res) { return res; },
+                 options.error || function(res) { return res; } );
 
     var req = new XMLHttpRequest();
     req.open(options.method || METHODS.GET, options.url, true);

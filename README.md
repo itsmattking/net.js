@@ -58,12 +58,12 @@ success function and fail function.
       }
     );
 
-Each set of functions are run in the order specified. By calling .chain() on a promise, each
+Each set of functions are run in the order specified. Each
 successive function will get back the data return from the previous set.
 
     net.ajax.get({
 	  url: '/my-endpoint'
-    }).chain().then(
+    }).then(
 	  function(req) {
         // successful response
 		// do something with the request, then

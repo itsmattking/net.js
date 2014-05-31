@@ -16,11 +16,6 @@ function() {
     };
   }
 
-  Promise.prototype.chain = function() {
-    this.chained = true;
-    return this;
-  };
-
   Promise.prototype.then = function(success, fail) {
     if (success) {
       this.promises.success.push(success);
@@ -37,9 +32,7 @@ function() {
     while (list.length) {
       var func = list.shift();
       var callResult = func(result, request);
-      if (this.chained) {
-        result = callResult;
-      }
+      result = callResult || result;
     }
     return this;
   };
