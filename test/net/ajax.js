@@ -161,3 +161,22 @@ asyncTest("Adds headers to outgoing request", function() {
 	});
 });
 
+test("Can convert a JS object into a query string", function() {
+	var obj = {param1: 'one', param2: 'two'};
+
+	ok(ajax.serialize(obj) === '?param1=one&param2=two', 'turns object into query string');
+});
+
+asyncTest("Modifies URL for a GET request with data", function( assert ) {
+	ajax.get({
+		url: apiUrl('/net/ajax/with-query'),
+		data: {param1: 'paramOne'},
+
+		success: asyncHandler(function(req) {
+			ok(req.status === 200, 'returns a 200 status');
+			ok((req instanceof window.XMLHttpRequest), 'returns an XMLHttpRequest instance');
+			assert.equal(req.responseText, 'url was /net/ajax/with-query?param1=paramOne');
+		}),
+		error: noError()
+	});
+});
