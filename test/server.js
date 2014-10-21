@@ -3,15 +3,16 @@ var sys = require('sys');
 var express = require('express');
 var app = express();
 var formidable = require('formidable');
-app.use(express.json());
-app.use(express.urlencoded());
+var bodyParser = require('body-parser')
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 /**
  * net/ajax test endpoints
  */
 
 app.get('/net/ajax', function(req, res, next) {
-	
+
 	if (req.get("My-Custom-Header")) {
 		sys.inspect(req);
 		res.set("My-Custom-Header", req.get("My-Custom-Header"));
@@ -31,6 +32,11 @@ app.get('/net/ajax/redirect', function(req, res, next) {
 app.get('/net/ajax/redirect-destination', function(req, res, next) {
 	res.statusCode = 200;
 	res.end("Redirect Destination");
+});
+app.get('/net/ajax/with-query', function(req, res, next) {
+	res.statusCode = 200;
+	var param1 = req.params.param1;
+	res.end('url was ' + req.url);
 });
 
 /**

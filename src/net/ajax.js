@@ -27,7 +27,7 @@ function(Promise) {
       throw new Error('This browser does not support XMLHttpRequest.');
 
     }());
-    
+
     return new XMLHttpRequest(Array.prototype.slice.call(arguments, 0));
   };
 
@@ -64,7 +64,7 @@ function(Promise) {
   }
 
   function handleReadyStateChange(promise, options) {
-    
+
     return function() {
       if (this.readyState !== 4) {
         return;
@@ -82,6 +82,17 @@ function(Promise) {
 
   }
 
+  function serialize(options) {
+    var str = [];
+    for(var p in options) {
+      if (options.hasOwnProperty(p)) {
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(options[p]));
+      }
+    }
+
+    return '?' + str.join("&");
+  }
+
   function request(optionsOrString, options) {
 
     if (typeof optionsOrString === 'string') {
@@ -89,6 +100,10 @@ function(Promise) {
       options.url = optionsOrString;
     } else {
       options = optionsOrString || {};
+    }
+
+    if ((options.method === METHODS.GET || options.method) && options.data) {
+      options.url = options.url + serialize(options.data);
     }
 
     var promise = new Promise();
@@ -150,7 +165,8 @@ function(Promise) {
     post: post,
     put: put,
     delete: del,
-    request: request
+    request: request,
+    serialize: serialize
   };
 
   return api;
