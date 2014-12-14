@@ -23,6 +23,9 @@ function() {
     if (fail) {
       this.promises.fail.push(fail);
     }
+    if (this.ranWith) {
+      this.run(this.ranWith[0], this.ranWith[1], this.ranWith[2]);
+    }
     return this;
   };
 
@@ -34,6 +37,8 @@ function() {
       var callResult = func(result, request);
       result = callResult || result;
     }
+    this.ranWith = [type, response, request];
+
     return this;
   };
 
