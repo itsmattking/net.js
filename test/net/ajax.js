@@ -161,3 +161,18 @@ asyncTest("Adds headers to outgoing request", function() {
 	});
 });
 
+asyncTest("Invokes callbacks added after a promise has been fulfilled", function () {
+	var promise = ajax.get({
+		url: apiUrl('/net/ajax'),
+		success: function (outerResponse, outerRequest) {
+			window.setTimeout(function () {
+				promise.then(function (innerResponse, innerRequest) {
+					start();
+					ok(outerResponse === innerResponse, 'original argument passed to then.');
+					ok(outerRequest === innerRequest, 'original argument passed to then.');
+				});
+			}, 0);
+		},
+		error: noError()
+	});
+});
