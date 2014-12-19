@@ -82,6 +82,19 @@ function(Promise) {
 
   }
 
+  function serialize(options) {
+    options = options || {};
+
+    var str = [];
+    for(var p in options) {
+      if (options.hasOwnProperty(p)) {
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(options[p]));
+      }
+    }
+
+    return (str.length === 0) ? '' : '?' + str.join("&");
+  }
+
   function request(optionsOrString, options) {
 
     if (typeof optionsOrString === 'string') {
@@ -90,6 +103,11 @@ function(Promise) {
     } else {
       options = optionsOrString || {};
     }
+
+    if ((options.method === METHODS.GET || options.method) && options.data) {
+      options.url = options.url + serialize(options.data);
+    }
+
 
     var promise = new Promise();
     promise.then(options.success || function(res) { return res; },
@@ -150,7 +168,8 @@ function(Promise) {
     post: post,
     put: put,
     delete: del,
-    request: request
+    request: request,
+    serialize: serialize
   };
 
   return api;

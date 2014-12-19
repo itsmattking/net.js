@@ -33,6 +33,11 @@ app.get('/net/ajax/redirect-destination', function(req, res, next) {
 	res.end("Redirect Destination");
 });
 
+app.get('/net/ajax/with-query', function(req, res, next) {
+	res.statusCode = 200;
+	res.end('url was ' + req.url);
+});
+
 /**
  * net/json test endpoints
  */
