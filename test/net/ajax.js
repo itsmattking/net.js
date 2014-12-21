@@ -180,25 +180,31 @@ asyncTest("Invokes callbacks added after a promise has been fulfilled", function
 test("Serialize can convert a JS object into a query string with one param", function() {
 	var obj = {param1: 'one'};
 
-	ok(ajax.serialize(obj) === '?param1=one', 'turns object into query string with one param');
+	ok(ajax.serialize({data: obj}) === 'param1=one', 'turns object into query string with one param');
 });
 
 test("Serialize can convert a JS object into a query string with two params", function() {
 	var obj = {param1: 'one', param2: 'two'};
 
-	ok(ajax.serialize(obj) === '?param1=one&param2=two', 'turns object into query string with two params');
+	ok(ajax.serialize({data: obj}) === 'param1=one&param2=two', 'turns object into query string with two params');
 });
 
 test("Serialize returns an empty string from an empty hash", function() {
 	var obj = {};
 
-	ok(ajax.serialize(obj) === '', 'turns object into empty string');
+	ok(ajax.serialize({data: obj}) === '', 'turns object into empty string');
 });
 
 test("Serialize escapes values", function() {
 	var obj = {param1: 'o&n,e', param2: 't<w;o'};
 
-	ok(ajax.serialize(obj) === '?param1=o%26n%2Ce&param2=t%3Cw%3Bo', 'turns object into query string with serialized params');
+	ok(ajax.serialize({data: obj}) === 'param1=o%26n%2Ce&param2=t%3Cw%3Bo', 'turns object into query string with serialized params');
+});
+
+test("Serialize can prepend a question mark for use in a URL", function() {
+	var obj = {param1: 'one', param2: 'two'};
+
+	ok(ajax.serialize({data: obj, forUrl: true}) === '?param1=one&param2=two', 'turns object into query string');
 });
 
 asyncTest("Modifies URL for a GET request with data", function( assert ) {

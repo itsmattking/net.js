@@ -83,16 +83,23 @@ function(Promise) {
   }
 
   function serialize(options) {
-    options = options || {};
+		options = options || {};
 
-    var str = [];
-    for(var p in options) {
-      if (options.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(options[p]));
-      }
+    for (var index = 0, keys = Object.keys(options.data), length = keys.length, out = [];
+         index < length;
+         index++) {
+
+      out.push([
+        encodeURIComponent(keys[index]),
+        encodeURIComponent(options.data[keys[index]])
+      ].join('='));
     }
 
-    return (str.length === 0) ? '' : '?' + str.join("&");
+    if (options.forUrl) {
+      return (out.length === 0) ? '' : '?' + out.join("&");
+    } else {
+      return out.join('&');
+    }
   }
 
   function request(optionsOrString, options) {
@@ -104,8 +111,8 @@ function(Promise) {
       options = optionsOrString || {};
     }
 
-    if ((options.method === METHODS.GET || options.method) && options.data) {
-      options.url = options.url + serialize(options.data);
+    if (options.method === METHODS.GET && options.data) {
+      options.url = options.url + serialize({data: options.data, forUrl: true});
     }
 
 
