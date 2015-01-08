@@ -4,19 +4,6 @@ define('net/form',
 
 function(ajax) {
 
-  function serialize(data) {
-    for (var index = 0, keys = Object.keys(data), length = keys.length, out = [];
-         index < length;
-         index++) {
-
-      out.push([
-        encodeURIComponent(keys[index]),
-        encodeURIComponent(data[keys[index]])
-      ].join('='));
-    }
-    return out.join('&');
-  }
-
   function preprocess(options) {
     options = options || {};
     options.headers = options.headers || {};
@@ -25,7 +12,7 @@ function(ajax) {
         options.data = new FormData(options.data);
       } else if (!(options.data instanceof FormData)) {
         options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        options.data = serialize(options.data);
+        options.data = ajax.serialize({data: options.data});
       }
     }
   }

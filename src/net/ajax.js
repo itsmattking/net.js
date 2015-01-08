@@ -82,6 +82,26 @@ function(Promise) {
 
   }
 
+  function serialize(options) {
+		options = options || {};
+
+    for (var index = 0, keys = Object.keys(options.data), length = keys.length, out = [];
+         index < length;
+         index++) {
+
+      out.push([
+        encodeURIComponent(keys[index]),
+        encodeURIComponent(options.data[keys[index]])
+      ].join('='));
+    }
+
+    if (options.forUrl) {
+      return (out.length === 0) ? '' : '?' + out.join("&");
+    } else {
+      return out.join('&');
+    }
+  }
+
   function request(optionsOrString, options) {
 
     if (typeof optionsOrString === 'string') {
@@ -90,6 +110,11 @@ function(Promise) {
     } else {
       options = optionsOrString || {};
     }
+
+    if (options.method === METHODS.GET && options.data) {
+      options.url = options.url + serialize({data: options.data, forUrl: true});
+    }
+
 
     var promise = new Promise();
     promise.then(options.success || function(res) { return res; },
@@ -150,7 +175,8 @@ function(Promise) {
     post: post,
     put: put,
     delete: del,
-    request: request
+    request: request,
+    serialize: serialize
   };
 
   return api;
